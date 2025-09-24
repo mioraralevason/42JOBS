@@ -1,6 +1,7 @@
 package ecole._2.jobs.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.nio.charset.StandardCharsets;
@@ -19,29 +20,37 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long companyId;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Name is required")
+    @Column(nullable = false, unique = true)
     private String name;
 
+    @NotBlank(message = "Responsable is required")
     @Column(nullable = false)
     private String responsable;
 
+    @NotBlank(message = "Poste is required")
     @Column(nullable = false)
     private String poste;
 
-    @Column
+    @NotBlank(message = "Telephone is required")
+    @Column(nullable = false)
     private String telephone;
 
+    @Email(message = "Email must be valid")
+    @NotBlank(message = "Email is required")
     @Column(nullable = false)
     private String email;
 
-    @Column
+    @NotBlank(message = "Adresse is required")
+    @Column(nullable = false)
     private String adresse;
 
+    @NotBlank(message = "Password is required")
     @Column(nullable = false, length = 255)
     private String password;
 
     @Column(nullable = false, unique = true)
-    private String login; // Automatically generated login
+    private String login;
 
     @Column
     private LocalDateTime validateAt;
@@ -75,11 +84,10 @@ public class Company {
         }
     }
 
-    // Generate a logical login based on company name
     private String generateLogin(String name) {
         if (name == null) name = "company";
-        String base = name.toLowerCase().replaceAll("[^a-z0-9]", ""); // remove spaces/special chars
-        long timestamp = System.currentTimeMillis() % 1000; // simple number to reduce duplicates
+        String base = name.toLowerCase().replaceAll("[^a-z0-9]", "");
+        long timestamp = System.currentTimeMillis() % 1000;
         return base + String.format("%03d", timestamp);
     }
 }

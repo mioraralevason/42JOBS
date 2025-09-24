@@ -26,16 +26,6 @@ export default function Register() {
     confirmPassword: '',
   });
 
-  const validPositions = [
-    'CEO',
-    'CTO',
-    'CFO',
-    'Manager',
-    'HR',
-    'Developer',
-    'Designer',
-  ];
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<ErrorState>({
@@ -48,8 +38,11 @@ export default function Register() {
     password: '',
     confirmPassword: '',
   });
+
   const [success, setSuccess] = useState(false);
   const [countdown, setCountdown] = useState(5);
+  const [apiData, setApiData] = useState<{ name: string; email: string; login: string } | null>(null);
+
   const navigate = useNavigate();
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -127,8 +120,12 @@ export default function Register() {
       const data = await response.json();
 
       if (response.ok && data.status) {
+        setApiData({
+          name: data.data.name,
+          email: data.data.email,
+          login: data.data.login
+        });
         setSuccess(true);
-        // start countdown
         setCountdown(5);
       } else {
         alert(data.message || 'Error creating company');
@@ -141,10 +138,10 @@ export default function Register() {
   // countdown effect
   useEffect(() => {
     if (!success) return;
-    if (countdown <= 0) {
-      navigate('/login');
-      return;
-    }
+    // if (countdown <= -1) {
+    //   navigate('/login');
+    //   return;
+    // }
     const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
     return () => clearTimeout(timer);
   }, [success, countdown, navigate]);
@@ -152,11 +149,23 @@ export default function Register() {
   return (
     <div className="register-container">
       <div className="register-card">
-        {success ? (
+        {success && apiData ? (
           <div className="success-message show">
             <div className="success-icon">✓</div>
             <h3>Account Created!</h3>
-            <p>Redirecting to login in {countdown} second{countdown > 1 ? 's' : ''}...</p>
+            <p>
+              A company representative will send your login credentials to the email you provided: <strong>{apiData.email}</strong>.
+            </p>
+            <p>
+              You will use it to log in. Please make sure to re-register if the email you provided is incorrect or does not match the company's email: <strong>{apiData.name}</strong>.
+            </p>
+            {/* <p>Redirecting in {countdown} second{countdown > 1 ? 's' : ''}...</p> */}
+            <button
+              className="register-btn btn"
+              onClick={() => navigate('/login')}
+            >
+              Go to Login
+            </button>
           </div>
         ) : (
           <>
@@ -167,170 +176,90 @@ export default function Register() {
             </div>
 
             <form className="register-form" onSubmit={handleSubmit} noValidate>
+              {/* Form rows and input fields as before */}
+              {/* Company Name & Address */}
               <div className="form-row">
                 <div className="form-group">
                   <div className="input-wrapper">
-                    <input
-                      type="text"
-                      id="companyName"
-                      name="companyName"
-                      value={formData.companyName}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <input type="text" id="companyName" name="companyName" value={formData.companyName} onChange={handleInputChange} required/>
                     <label htmlFor="companyName">Company Name</label>
                     <span className="input-line"></span>
                   </div>
-                  <span className={`error-message ${error.companyName ? 'show' : ''}`}>
-                    {error.companyName}
-                  </span>
+                  <span className={`error-message ${error.companyName ? 'show' : ''}`}>{error.companyName}</span>
                 </div>
-
                 <div className="form-group">
                   <div className="input-wrapper">
-                    <input
-                      type="text"
-                      id="companyAddress"
-                      name="companyAddress"
-                      value={formData.companyAddress}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <input type="text" id="companyAddress" name="companyAddress" value={formData.companyAddress} onChange={handleInputChange} required/>
                     <label htmlFor="companyAddress">Company Address</label>
                     <span className="input-line"></span>
                   </div>
-                  <span className={`error-message ${error.companyAddress ? 'show' : ''}`}>
-                    {error.companyAddress}
-                  </span>
+                  <span className={`error-message ${error.companyAddress ? 'show' : ''}`}>{error.companyAddress}</span>
                 </div>
               </div>
 
+              {/* Responsible Position & Name */}
               <div className="form-row">
                 <div className="form-group">
-                <div className="input-wrapper">
-                        <input
-                        type="text"
-                        id="responsiblePosition"
-                        name="responsiblePosition"
-                        value={formData.responsiblePosition}
-                        onChange={handleInputChange}
-                        required
-                        />
-                        <label htmlFor="responsiblePosition">Responsible Position</label>
-                        <span className="input-line"></span>
-                    </div>
-                    <span className={`error-message ${error.responsiblePosition ? 'show' : ''}`}>
-                        {error.responsiblePosition}
-                    </span>
+                  <div className="input-wrapper">
+                    <input type="text" id="responsiblePosition" name="responsiblePosition" value={formData.responsiblePosition} onChange={handleInputChange} required/>
+                    <label htmlFor="responsiblePosition">Responsible Position</label>
+                    <span className="input-line"></span>
+                  </div>
+                  <span className={`error-message ${error.responsiblePosition ? 'show' : ''}`}>{error.responsiblePosition}</span>
                 </div>
-
-
                 <div className="form-group">
                   <div className="input-wrapper">
-                    <input
-                      type="text"
-                      id="responsibleName"
-                      name="responsibleName"
-                      value={formData.responsibleName}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <input type="text" id="responsibleName" name="responsibleName" value={formData.responsibleName} onChange={handleInputChange} required/>
                     <label htmlFor="responsibleName">Responsible Name</label>
                     <span className="input-line"></span>
                   </div>
-                  <span className={`error-message ${error.responsibleName ? 'show' : ''}`}>
-                    {error.responsibleName}
-                  </span>
+                  <span className={`error-message ${error.responsibleName ? 'show' : ''}`}>{error.responsibleName}</span>
                 </div>
               </div>
 
+              {/* Email & Telephone */}
               <div className="form-row">
                 <div className="form-group">
                   <div className="input-wrapper">
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <input type="email" id="email" name="email" value={formData.email} onChange={handleInputChange} required/>
                     <label htmlFor="email">Professional Email</label>
                     <span className="input-line"></span>
                   </div>
-                  <span className={`error-message ${error.email ? 'show' : ''}`}>
-                    {error.email}
-                  </span>
+                  <span className={`error-message ${error.email ? 'show' : ''}`}>{error.email}</span>
                 </div>
-
                 <div className="form-group">
                   <div className="input-wrapper">
-                    <input
-                      type="tel"
-                      id="telephone"
-                      name="telephone"
-                      value={formData.telephone}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <input type="tel" id="telephone" name="telephone" value={formData.telephone} onChange={handleInputChange} required/>
                     <label htmlFor="telephone">Telephone</label>
                     <span className="input-line"></span>
                   </div>
-                  <span className={`error-message ${error.telephone ? 'show' : ''}`}>
-                    {error.telephone}
-                  </span>
+                  <span className={`error-message ${error.telephone ? 'show' : ''}`}>{error.telephone}</span>
                 </div>
               </div>
 
+              {/* Password & Confirm Password */}
               <div className="form-row">
                 <div className="form-group">
                   <div className="input-wrapper password-wrapper">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      id="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <input type={showPassword ? 'text' : 'password'} id="password" name="password" value={formData.password} onChange={handleInputChange} required/>
                     <label htmlFor="password">Password</label>
-                    <button
-                      type="button"
-                      className="password-toggle"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
+                    <button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
                       <span className={`toggle-icon ${showPassword ? 'show-password' : ''}`}></span>
                     </button>
                     <span className="input-line"></span>
                   </div>
-                  <span className={`error-message ${error.password ? 'show' : ''}`}>
-                    {error.password}
-                  </span>
+                  <span className={`error-message ${error.password ? 'show' : ''}`}>{error.password}</span>
                 </div>
-
                 <div className="form-group">
                   <div className="input-wrapper password-wrapper">
-                    <input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <input type={showConfirmPassword ? 'text' : 'password'} id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} required/>
                     <label htmlFor="confirmPassword">Confirm Password</label>
-                    <button
-                      type="button"
-                      className="password-toggle"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
+                    <button type="button" className="password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                       <span className={`toggle-icon ${showConfirmPassword ? 'show-password' : ''}`}></span>
                     </button>
                     <span className="input-line"></span>
                   </div>
-                  <span className={`error-message ${error.confirmPassword ? 'show' : ''}`}>
-                    {error.confirmPassword}
-                  </span>
+                  <span className={`error-message ${error.confirmPassword ? 'show' : ''}`}>{error.confirmPassword}</span>
                 </div>
               </div>
 
@@ -340,7 +269,11 @@ export default function Register() {
                 <span className="btn-glow"></span>
               </button>
             </form>
+            <div className="signup-link">
+              <p>Already have an account? <Link to="/login">Log in</Link></p>
+            </div>
           </>
+          
         )}
       </div>
     </div>

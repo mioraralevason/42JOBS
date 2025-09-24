@@ -4,6 +4,8 @@ import ecole._2.jobs.dto.ApiResponse;
 import ecole._2.jobs.dto.LoginRequest;
 import ecole._2.jobs.entities.Company;
 import ecole._2.jobs.services.CompanyService;
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
@@ -26,7 +28,7 @@ public class CompanyController {
 
     // Create a company
     @PostMapping
-    public ApiResponse<Company> createCompany(@RequestBody Company company) {
+    public ApiResponse<Company> createCompany(@Valid @RequestBody Company company) {
         try {
             Company saved = service.saveCompany(company);
             return new ApiResponse<>(true, saved, "Company created successfully");
