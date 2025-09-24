@@ -151,10 +151,17 @@ export default function Login() {
         <div className="divider"><span>or</span></div>
 
         <div className="social-login">
-          <button type="button" className="social-btn google-btn">
+          <button
+            type="button"
+            className="social-btn google-btn"
+            onClick={() => {
+              window.location.href = `${config.API_BASE_URL}/login`;
+            }}
+          >
             SIGN IN WITH INTRA
           </button>
         </div>
+
 
         <div className="signup-link">
           <p>New here? <Link to="/register">Create an account</Link></p>
